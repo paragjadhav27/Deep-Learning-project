@@ -1,0 +1,127 @@
+# Local environment with the production topology: web + API + Celery worker +
+# PostgreSQL + Redis + S3-compatible storage (SeaweedFS). For development only; see
+# docs/RUNBOOK.md for production. Start with `docker compose up --build`, then open
+# http://localhost:3000.
+#
+# SeaweedFS (Apache-2.0) is used here purely as a local S3 stand-in. It replaced
+# MinIO, whose images are no longer published on Docker Hub or quay.io.
+
+x-api-env: &api-env
+  FACELENS_ENVIRONMENT: development
+  FACELENS_LOG_LEVEL: INFO
+  FACELENS_DATABASE_URL: postgresql+psycopg://facelens:facelens@postgres:5432/facelens
+  FACELENS_STORAGE_BACKEND: s3
+  FACELENS_S3_BUCKET: facelens-dev
+  FACELENS_S3_ENDPOINT_URL: http://seaweedfs:8333
+  FACELENS_S3_REGION: us-east-1
+  FACELENS_S3_SSE: none  # no KMS in the local store; production requires SSE
+  FACELENS_REDIS_URL: redis://redis:6379/0
+  FACELENS_JOB_BACKEND: celery
+  FACELENS_RATE_LIMIT_BACKEND: redis
+  FACELENS_FACE_DETECTOR: yunet
+  FACELENS_SIGNING_SECRET: ${FACELENS_SIGNING_SECRET:-local-compose-signing-secret-not-for-production}
+  FACELENS_CORS_ORIGINS: '["http://localhost:3000"]'
+  # Requests reach the API via the web container's /v1 rewrite in this local setup, so
+  # every user shares one rate-limit bucket. In production, route /v1/* at the load
+  # balancer straight to the API and set FORWARDED_ALLOW_IPS to the balancer's addresses.
+  AWS_ACCESS_KEY_ID: facelens
+  AWS_SECRET_ACCESS_KEY: facelens-dev-secret
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: facelens
+      POSTGRES_PASSWORD: facelens
+      POSTGRES_DB: facelens
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U facelens"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]  # no persistence needed
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.48
+    # Single-node master + volume + filer + S3 gateway. With no S3 config file,
+    # the gateway takes its only credentials from AWS_ACCESS_KEY_ID/SECRET below.
+    command: ["server", "-dir=/data", "-s3", "-ip.bind=0.0.0.0"]
+    environment:
+      AWS_ACCESS_KEY_ID: facelens
+      AWS_SECRET_ACCESS_KEY: facelens-dev-secret
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8333/healthz"]
+      interval: 5s
+      retries: 10
+
+  s3-init:
+    image: amazon/aws-cli:2.37.6
+    depends_on:
+      seaweedfs: { condition: service_healthy }
+    environment:
+      AWS_ACCESS_KEY_ID: facelens
+      AWS_SECRET_ACCESS_KEY: facelens-dev-secret
+      AWS_DEFAULT_REGION: us-east-1
+    entrypoint: ["/bin/sh", "-c"]
+    # Buckets are private by default. The bucket must exist; the 1-day expiry
+    # rule is a best-effort backstop to the API's own retention sweeper.
+    command:
+      - |
+        set -e
+        S3="aws --endpoint-url http://seaweedfs:8333 s3api"
+        $$S3 head-bucket --bucket facelens-dev 2>/dev/null || $$S3 create-bucket --bucket facelens-dev
+        $$S3 put-bucket-lifecycle-configuration --bucket facelens-dev --lifecycle-configuration '{"Rules":[{"ID":"expire-1d","Status":"Enabled","Filter":{"Prefix":""},"Expiration":{"Days":1}}]}' || echo "lifecycle rule not applied (non-fatal)"
+        echo "bucket facelens-dev ready"
+
+  api:
+    build: ./apps/api
+    environment:
+      <<: *api-env
+      FACELENS_AUTO_MIGRATE: "true"
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      s3-init: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/readyz').status==200 else 1)"]
+      interval: 10s
+      retries: 6
+    stop_grace_period: 40s
+
+  worker:
+    build: ./apps/api
+    command: ["celery", "-A", "facelens_api.jobs.worker:celery_app", "worker", "-Q", "inference", "--concurrency", "2", "--loglevel", "INFO"]
+    environment:
+      <<: *api-env
+      FACELENS_AUTO_MIGRATE: "false"
+      FACELENS_SWEEPER_ENABLED: "false"
+    # The image's HEALTHCHECK probes the API's HTTP port, which the worker doesn't serve.
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A facelens_api.jobs.worker:celery_app inspect ping -d celery@$$HOSTNAME --timeout 5"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      api: { condition: service_healthy }  # API applies migrations first
+    stop_grace_period: 120s  # Celery warm shutdown lets in-flight jobs finish
+
+  web:
+    build:
+      context: ./apps/web
+      args:
+        API_ORIGIN: http://api:8000
+    ports: ["3000:3000"]  # open http://localhost:3000
+    depends_on:
+      api: { condition: service_healthy }
+
+volumes:
+  pgdata:

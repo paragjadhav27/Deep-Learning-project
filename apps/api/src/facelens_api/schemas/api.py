@@ -1,0 +1,232 @@
+"""Typed request/response contracts for API v1."""
+
+from __future__ import annotations
+
+from datetime import datetime
+from typing import Annotated, Literal
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from facelens_api.domain.enums import (
+    FaceCheckStatus,
+    JobStatus,
+    PresentationOutcome,
+    TargetAgeGroup,
+    Task,
+)
+from facelens_api.domain.errors import ErrorCode
+
+CONSENT_VERSION = "2026-09-v1"
+
+
+class _Model(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+# ---- errors -----------------------------------------------------------------
+
+
+# Router-level codes that don't come from AppError.
+HttpErrorCode = Literal["not_found", "method_not_allowed", "http_error"]
+
+
+class ErrorBody(_Model):
+    code: ErrorCode | HttpErrorCode
+    message: str
+    retryable: bool
+    request_id: str | None = None
+    details: dict[str, object] | None = None
+
+
+class ErrorResponse(_Model):
+    error: ErrorBody
+
+
+# ---- sessions -----------------------------------------------------------------
+
+
+class Consent(_Model):
+    """All three must be true. Sent as a JSON string in the multipart ``consent`` field."""
+
+    has_permission: bool = Field(description="I have permission to upload this image.")
+    is_adult: bool = Field(description="The person pictured, and I, are 18 or older.")
+    accepts_limitations: bool = Field(
+        description="I understand results are uncertain estimates, not facts about anyone."
+    )
+
+    @property
+    def is_complete(self) -> bool:
+        return self.has_permission and self.is_adult and self.accepts_limitations
+
+
+class ImageInfo(_Model):
+    width: int
+    height: int
+    format: Literal["jpeg"]
+    metadata_stripped: Literal[True] = True
+    url: str = Field(description="Short-lived signed link to the sanitized image (the 'before').")
+    url_expires_at: datetime
+
+
+class FaceCheck(_Model):
+    status: FaceCheckStatus
+
+
+class SessionCreated(_Model):
+    session_id: str
+    session_token: str = Field(
+        description="Secret for this session. Returned once; send it as X-Session-Token."
+    )
+    expires_at: datetime
+    image: ImageInfo
+    face_check: FaceCheck
+
+
+class SessionView(_Model):
+    session_id: str
+    expires_at: datetime
+    image: ImageInfo
+    job_ids: list[str]
+
+
+# ---- jobs ---------------------------------------------------------------------
+
+
+class AgeEstimationRequest(_Model):
+    task: Literal[Task.AGE_ESTIMATION]
+
+
+class PresentationEstimationRequest(_Model):
+    task: Literal[Task.PRESENTATION_ESTIMATION]
+
+
+class AgeTransformationParams(_Model):
+    target_age_group: TargetAgeGroup
+
+
+class AgeTransformationRequest(_Model):
+    task: Literal[Task.AGE_TRANSFORMATION]
+    params: AgeTransformationParams
+
+
+JobCreate = Annotated[
+    AgeEstimationRequest | PresentationEstimationRequest | AgeTransformationRequest,
+    Field(discriminator="task"),
+]
+
+
+class ModelRef(_Model):
+    id: str
+    version: str
+    is_mock: bool
+
+
+class AgeEstimationResult(_Model):
+    estimate_years: int
+    range_years: tuple[int, int]
+    interval_coverage: float = Field(description="Nominal coverage of range_years, e.g. 0.8.")
+    disclaimer_code: Literal["age_estimate_v1"] = "age_estimate_v1"
+
+
+class PresentationScores(_Model):
+    feminine_presenting: float
+    masculine_presenting: float
+
+
+class PresentationEstimationResult(_Model):
+    outcome: PresentationOutcome
+    scores: PresentationScores
+    uncertain_threshold: float
+    disclaimer_code: Literal["presentation_estimate_v1"] = "presentation_estimate_v1"
+
+
+class AgeTransformationResult(_Model):
+    target_age_group: TargetAgeGroup
+    image_url: str
+    image_url_expires_at: datetime
+    synthetic: Literal[True] = True
+    watermarked: Literal[True] = True
+    disclaimer_code: Literal["synthetic_image_v1"] = "synthetic_image_v1"
+
+
+JobResult = AgeEstimationResult | PresentationEstimationResult | AgeTransformationResult
+
+
+class JobError(_Model):
+    code: ErrorCode
+    message: str
+    retryable: bool
+
+
+class JobView(_Model):
+    job_id: str
+    session_id: str
+    task: Task
+    params: dict[str, str]
+    status: JobStatus
+    progress: float
+    stage: str | None
+    created_at: datetime
+    finished_at: datetime | None
+    result: JobResult | None = None
+    error: JobError | None = None
+    model: ModelRef | None = None
+
+
+# ---- capabilities ---------------------------------------------------------------
+
+
+class TargetGroupView(_Model):
+    group: TargetAgeGroup
+    available: bool
+    reason: str | None
+
+
+class ModelCard(_Model):
+    id: str
+    version: str
+    is_mock: bool
+    license: str
+    source_url: str | None
+    intended_use: str
+    limitations: list[str]
+    eval_passed: bool = Field(
+        description="Passed the pre-registered release gates. Real models that haven't are "
+        "only served in development with an explicit override, and the UI must say so."
+    )
+    eval_report: str | None
+
+
+class FeatureView(_Model):
+    task: Task
+    enabled: bool
+    model: ModelCard | None
+
+
+class FaceDetectionView(_Model):
+    enabled: bool
+    model_id: str | None
+    version: str | None
+    license: str | None
+    source_url: str | None
+    min_face_side: int
+    policy: str = "Exactly one face per image; images with no face or several faces are refused."
+
+
+class CapabilitiesView(_Model):
+    api_version: Literal["v1"] = "v1"
+    face_detection: FaceDetectionView
+    features: list[FeatureView]
+    target_age_groups: list[TargetGroupView]
+    presentation_uncertain_threshold: float
+    session_ttl_seconds: int
+    max_upload_bytes: int
+    accepted_formats: list[str]
+    min_image_side: int
+    max_image_side: int
+    consent_version: str = CONSENT_VERSION
+
+
+class HealthView(_Model):
+    status: Literal["ok", "degraded"]
+    checks: dict[str, bool] = Field(default_factory=dict)

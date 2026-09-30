@@ -1,0 +1,12 @@
+{
+  "half_width_years": 3.417,
+  "coverage_target": 0.8,
+  "dataset": "HuggingFaceM4/FairFace@54d573cd (validation, padding 1.25)",
+  "n_calibration": 2408,
+  "eval_report": "eval/results/mivolo_v2_fairface.json",
+  "gates": {
+    "age_estimation": false,
+    "presentation_estimation": false
+  },
+  "generated_at": "2026-09-24T21:49:35+00:00"
+}
