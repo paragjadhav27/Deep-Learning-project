@@ -1,0 +1,1483 @@
+{
+  "source": "eval/dashboard.py",
+  "evaluations": [
+    {
+      "task": "face_detection",
+      "model_id": "yunet@2026may",
+      "model_name": "YuNet",
+      "report": "eval/results/mivolo_v2_fairface.json",
+      "dataset": "HuggingFaceM4/FairFace@54d573cd (validation, padding 1.25)",
+      "evaluated_at": "2026-09-24T21:49:35+00:00",
+      "n": 4930,
+      "criteria": [
+        {
+          "id": "miss_rate_gap",
+          "label": "Gap in miss rate between groups",
+          "format": "pp",
+          "comparator": "max",
+          "limit": 0.03,
+          "measured": 0.0044,
+          "worst_family": "race",
+          "worst_group": "East Asian",
+          "passed": true,
+          "by_family": [
+            {
+              "family": "race",
+              "group": "East Asian",
+              "measured": 0.0044,
+              "passed": true
+            },
+            {
+              "family": "gender",
+              "group": "Male",
+              "measured": 0.0019,
+              "passed": true
+            },
+            {
+              "family": "age_bin",
+              "group": "30-39",
+              "measured": 0.0021,
+              "passed": true
+            }
+          ]
+        }
+      ],
+      "metrics": [
+        {
+          "id": "miss_rate",
+          "label": "Miss rate (no face found)",
+          "format": "percent",
+          "higher_is_better": false,
+          "overall": 0.001,
+          "gate_threshold": null,
+          "families": [
+            {
+              "family": "race",
+              "label": "Annotated race",
+              "groups": [
+                {
+                  "group": "East Asian",
+                  "n": 681,
+                  "value": 0.0044,
+                  "ci95": [
+                    0.0,
+                    0.0103
+                  ]
+                },
+                {
+                  "group": "Indian",
+                  "n": 677,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "Black",
+                  "n": 643,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "White",
+                  "n": 1007,
+                  "value": 0.001,
+                  "ci95": [
+                    0.0,
+                    0.004
+                  ]
+                },
+                {
+                  "group": "Middle Eastern",
+                  "n": 599,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "Latino/Hispanic",
+                  "n": 727,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "Southeast Asian",
+                  "n": 596,
+                  "value": 0.0017,
+                  "ci95": [
+                    0.0,
+                    0.005
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "gender",
+              "label": "Annotated gender",
+              "groups": [
+                {
+                  "group": "Male",
+                  "n": 2597,
+                  "value": 0.0019,
+                  "ci95": [
+                    0.0004,
+                    0.0035
+                  ]
+                },
+                {
+                  "group": "Female",
+                  "n": 2333,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "age_bin",
+              "label": "Annotated age",
+              "groups": [
+                {
+                  "group": "20-29",
+                  "n": 1980,
+                  "value": 0.0005,
+                  "ci95": [
+                    0.0,
+                    0.0015
+                  ]
+                },
+                {
+                  "group": "30-39",
+                  "n": 1398,
+                  "value": 0.0021,
+                  "ci95": [
+                    0.0,
+                    0.005
+                  ]
+                },
+                {
+                  "group": "40-49",
+                  "n": 812,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "50-59",
+                  "n": 478,
+                  "value": 0.0021,
+                  "ci95": [
+                    0.0,
+                    0.0063
+                  ]
+                },
+                {
+                  "group": "60-69",
+                  "n": 192,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "70+",
+                  "n": 70,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "task": "age_estimation",
+      "model_id": "mivolo-v2-face@53393526",
+      "model_name": "MiVOLO v2",
+      "report": "eval/results/mivolo_v2_fairface.json",
+      "dataset": "HuggingFaceM4/FairFace@54d573cd (validation, padding 1.25)",
+      "evaluated_at": "2026-09-24T21:49:35+00:00",
+      "n": 3594,
+      "criteria": [
+        {
+          "id": "mae_ratio",
+          "label": "Worst group's error vs. overall (MAE-to-bin)",
+          "format": "ratio",
+          "comparator": "max",
+          "limit": 1.5,
+          "measured": 1.551,
+          "worst_family": "age_bin",
+          "worst_group": "40-49",
+          "passed": false,
+          "by_family": [
+            {
+              "family": "race",
+              "group": "Black",
+              "measured": 1.392,
+              "passed": true
+            },
+            {
+              "family": "gender",
+              "group": "Female",
+              "measured": 1.164,
+              "passed": true
+            },
+            {
+              "family": "age_bin",
+              "group": "40-49",
+              "measured": 1.551,
+              "passed": false
+            }
+          ]
+        },
+        {
+          "id": "coverage",
+          "label": "Worst group's range coverage",
+          "format": "percent",
+          "comparator": "min",
+          "limit": 0.7,
+          "measured": 0.6785,
+          "worst_family": "age_bin",
+          "worst_group": "40-49",
+          "passed": false,
+          "by_family": [
+            {
+              "family": "race",
+              "group": "Black",
+              "measured": 0.7253,
+              "passed": true
+            },
+            {
+              "family": "gender",
+              "group": "Female",
+              "measured": 0.76,
+              "passed": true
+            },
+            {
+              "family": "age_bin",
+              "group": "40-49",
+              "measured": 0.6785,
+              "passed": false
+            }
+          ]
+        },
+        {
+          "id": "false_block",
+          "label": "Adults wrongly blocked as under 18",
+          "format": "percent",
+          "comparator": "max",
+          "limit": 0.01,
+          "measured": 0.0279,
+          "worst_family": "race",
+          "worst_group": "Black",
+          "passed": false,
+          "by_family": [
+            {
+              "family": "race",
+              "group": "Black",
+              "measured": 0.0279,
+              "passed": false
+            },
+            {
+              "family": "gender",
+              "group": "Female",
+              "measured": 0.0177,
+              "passed": false
+            },
+            {
+              "family": "age_bin",
+              "group": "20-29",
+              "measured": 0.0203,
+              "passed": false
+            }
+          ]
+        }
+      ],
+      "metrics": [
+        {
+          "id": "mae_to_bin",
+          "label": "Error: years outside the annotated bin (MAE-to-bin)",
+          "format": "years",
+          "higher_is_better": false,
+          "overall": 1.903,
+          "gate_threshold": 2.8545,
+          "families": [
+            {
+              "family": "race",
+              "label": "Annotated race",
+              "groups": [
+                {
+                  "group": "East Asian",
+                  "n": 509,
+                  "value": 1.6525,
+                  "ci95": [
+                    1.4046,
+                    1.9136
+                  ]
+                },
+                {
+                  "group": "Indian",
+                  "n": 520,
+                  "value": 2.0626,
+                  "ci95": [
+                    1.7887,
+                    2.4012
+                  ]
+                },
+                {
+                  "group": "Black",
+                  "n": 466,
+                  "value": 2.6493,
+                  "ci95": [
+                    2.2663,
+                    3.02
+                  ]
+                },
+                {
+                  "group": "White",
+                  "n": 745,
+                  "value": 1.421,
+                  "ci95": [
+                    1.2211,
+                    1.6369
+                  ]
+                },
+                {
+                  "group": "Middle Eastern",
+                  "n": 454,
+                  "value": 1.5843,
+                  "ci95": [
+                    1.3009,
+                    1.8685
+                  ]
+                },
+                {
+                  "group": "Latino/Hispanic",
+                  "n": 459,
+                  "value": 1.8589,
+                  "ci95": [
+                    1.5294,
+                    2.1789
+                  ]
+                },
+                {
+                  "group": "Southeast Asian",
+                  "n": 441,
+                  "value": 2.406,
+                  "ci95": [
+                    2.0276,
+                    2.7711
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "gender",
+              "label": "Annotated gender",
+              "groups": [
+                {
+                  "group": "Male",
+                  "n": 1902,
+                  "value": 1.6264,
+                  "ci95": [
+                    1.4945,
+                    1.7591
+                  ]
+                },
+                {
+                  "group": "Female",
+                  "n": 1692,
+                  "value": 2.2146,
+                  "ci95": [
+                    2.0299,
+                    2.4129
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "age_bin",
+              "label": "Annotated age",
+              "groups": [
+                {
+                  "group": "20-29",
+                  "n": 1431,
+                  "value": 1.0429,
+                  "ci95": [
+                    0.9042,
+                    1.1781
+                  ]
+                },
+                {
+                  "group": "30-39",
+                  "n": 1028,
+                  "value": 2.4662,
+                  "ci95": [
+                    2.244,
+                    2.6885
+                  ]
+                },
+                {
+                  "group": "40-49",
+                  "n": 594,
+                  "value": 2.9514,
+                  "ci95": [
+                    2.6009,
+                    3.2917
+                  ]
+                },
+                {
+                  "group": "50-59",
+                  "n": 351,
+                  "value": 1.9283,
+                  "ci95": [
+                    1.5755,
+                    2.2583
+                  ]
+                },
+                {
+                  "group": "60-69",
+                  "n": 134,
+                  "value": 2.5354,
+                  "ci95": [
+                    1.9498,
+                    3.1419
+                  ]
+                },
+                {
+                  "group": "70+",
+                  "n": 56,
+                  "value": 0.7689,
+                  "ci95": [
+                    0.3289,
+                    1.3792
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "coverage",
+          "label": "Range coverage (target 80%)",
+          "format": "percent",
+          "higher_is_better": true,
+          "overall": 0.7905,
+          "gate_threshold": 0.7,
+          "families": [
+            {
+              "family": "race",
+              "label": "Annotated race",
+              "groups": [
+                {
+                  "group": "East Asian",
+                  "n": 509,
+                  "value": 0.8075,
+                  "ci95": [
+                    0.7701,
+                    0.8428
+                  ]
+                },
+                {
+                  "group": "Indian",
+                  "n": 520,
+                  "value": 0.7827,
+                  "ci95": [
+                    0.7442,
+                    0.8154
+                  ]
+                },
+                {
+                  "group": "Black",
+                  "n": 466,
+                  "value": 0.7253,
+                  "ci95": [
+                    0.6845,
+                    0.7639
+                  ]
+                },
+                {
+                  "group": "White",
+                  "n": 745,
+                  "value": 0.8362,
+                  "ci95": [
+                    0.8094,
+                    0.8617
+                  ]
+                },
+                {
+                  "group": "Middle Eastern",
+                  "n": 454,
+                  "value": 0.8282,
+                  "ci95": [
+                    0.793,
+                    0.8612
+                  ]
+                },
+                {
+                  "group": "Latino/Hispanic",
+                  "n": 459,
+                  "value": 0.7865,
+                  "ci95": [
+                    0.7473,
+                    0.8235
+                  ]
+                },
+                {
+                  "group": "Southeast Asian",
+                  "n": 441,
+                  "value": 0.737,
+                  "ci95": [
+                    0.6939,
+                    0.7778
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "gender",
+              "label": "Annotated gender",
+              "groups": [
+                {
+                  "group": "Male",
+                  "n": 1902,
+                  "value": 0.8176,
+                  "ci95": [
+                    0.7997,
+                    0.8365
+                  ]
+                },
+                {
+                  "group": "Female",
+                  "n": 1692,
+                  "value": 0.76,
+                  "ci95": [
+                    0.7405,
+                    0.7801
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "age_bin",
+              "label": "Annotated age",
+              "groups": [
+                {
+                  "group": "20-29",
+                  "n": 1431,
+                  "value": 0.8959,
+                  "ci95": [
+                    0.8812,
+                    0.9119
+                  ]
+                },
+                {
+                  "group": "30-39",
+                  "n": 1028,
+                  "value": 0.7121,
+                  "ci95": [
+                    0.6848,
+                    0.7393
+                  ]
+                },
+                {
+                  "group": "40-49",
+                  "n": 594,
+                  "value": 0.6785,
+                  "ci95": [
+                    0.6397,
+                    0.7155
+                  ]
+                },
+                {
+                  "group": "50-59",
+                  "n": 351,
+                  "value": 0.792,
+                  "ci95": [
+                    0.7493,
+                    0.8319
+                  ]
+                },
+                {
+                  "group": "60-69",
+                  "n": 134,
+                  "value": 0.709,
+                  "ci95": [
+                    0.6269,
+                    0.7836
+                  ]
+                },
+                {
+                  "group": "70+",
+                  "n": 56,
+                  "value": 0.9107,
+                  "ci95": [
+                    0.8388,
+                    0.9821
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bin_accuracy",
+          "label": "Estimate inside the annotated bin",
+          "format": "percent",
+          "higher_is_better": true,
+          "overall": 0.5698,
+          "gate_threshold": null,
+          "families": [
+            {
+              "family": "race",
+              "label": "Annotated race",
+              "groups": [
+                {
+                  "group": "East Asian",
+                  "n": 509,
+                  "value": 0.5894,
+                  "ci95": [
+                    0.5481,
+                    0.6327
+                  ]
+                },
+                {
+                  "group": "Indian",
+                  "n": 520,
+                  "value": 0.525,
+                  "ci95": [
+                    0.4788,
+                    0.5692
+                  ]
+                },
+                {
+                  "group": "Black",
+                  "n": 466,
+                  "value": 0.4549,
+                  "ci95": [
+                    0.4099,
+                    0.4979
+                  ]
+                },
+                {
+                  "group": "White",
+                  "n": 745,
+                  "value": 0.6201,
+                  "ci95": [
+                    0.5825,
+                    0.655
+                  ]
+                },
+                {
+                  "group": "Middle Eastern",
+                  "n": 454,
+                  "value": 0.6123,
+                  "ci95": [
+                    0.5683,
+                    0.6564
+                  ]
+                },
+                {
+                  "group": "Latino/Hispanic",
+                  "n": 459,
+                  "value": 0.6144,
+                  "ci95": [
+                    0.5708,
+                    0.658
+                  ]
+                },
+                {
+                  "group": "Southeast Asian",
+                  "n": 441,
+                  "value": 0.5465,
+                  "ci95": [
+                    0.5011,
+                    0.5896
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "gender",
+              "label": "Annotated gender",
+              "groups": [
+                {
+                  "group": "Male",
+                  "n": 1902,
+                  "value": 0.5952,
+                  "ci95": [
+                    0.5736,
+                    0.6183
+                  ]
+                },
+                {
+                  "group": "Female",
+                  "n": 1692,
+                  "value": 0.5414,
+                  "ci95": [
+                    0.5183,
+                    0.5644
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "age_bin",
+              "label": "Annotated age",
+              "groups": [
+                {
+                  "group": "20-29",
+                  "n": 1431,
+                  "value": 0.6974,
+                  "ci95": [
+                    0.6744,
+                    0.7219
+                  ]
+                },
+                {
+                  "group": "30-39",
+                  "n": 1028,
+                  "value": 0.464,
+                  "ci95": [
+                    0.4348,
+                    0.4932
+                  ]
+                },
+                {
+                  "group": "40-49",
+                  "n": 594,
+                  "value": 0.4596,
+                  "ci95": [
+                    0.4192,
+                    0.5017
+                  ]
+                },
+                {
+                  "group": "50-59",
+                  "n": 351,
+                  "value": 0.5442,
+                  "ci95": [
+                    0.4957,
+                    0.5954
+                  ]
+                },
+                {
+                  "group": "60-69",
+                  "n": 134,
+                  "value": 0.5,
+                  "ci95": [
+                    0.4104,
+                    0.5821
+                  ]
+                },
+                {
+                  "group": "70+",
+                  "n": 56,
+                  "value": 0.75,
+                  "ci95": [
+                    0.6429,
+                    0.875
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "false_adult_block",
+          "label": "Adults wrongly blocked as under 18",
+          "format": "percent",
+          "higher_is_better": false,
+          "overall": 0.01029,
+          "gate_threshold": 0.01,
+          "families": [
+            {
+              "family": "race",
+              "label": "Annotated race",
+              "groups": [
+                {
+                  "group": "East Asian",
+                  "n": 509,
+                  "value": 0.0079,
+                  "ci95": [
+                    0.002,
+                    0.0157
+                  ]
+                },
+                {
+                  "group": "Indian",
+                  "n": 520,
+                  "value": 0.0058,
+                  "ci95": [
+                    0.0,
+                    0.0135
+                  ]
+                },
+                {
+                  "group": "Black",
+                  "n": 466,
+                  "value": 0.0279,
+                  "ci95": [
+                    0.015,
+                    0.0429
+                  ]
+                },
+                {
+                  "group": "White",
+                  "n": 745,
+                  "value": 0.0027,
+                  "ci95": [
+                    0.0,
+                    0.0067
+                  ]
+                },
+                {
+                  "group": "Middle Eastern",
+                  "n": 454,
+                  "value": 0.0022,
+                  "ci95": [
+                    0.0,
+                    0.0066
+                  ]
+                },
+                {
+                  "group": "Latino/Hispanic",
+                  "n": 459,
+                  "value": 0.0065,
+                  "ci95": [
+                    0.0,
+                    0.0153
+                  ]
+                },
+                {
+                  "group": "Southeast Asian",
+                  "n": 441,
+                  "value": 0.0249,
+                  "ci95": [
+                    0.0113,
+                    0.0408
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "gender",
+              "label": "Annotated gender",
+              "groups": [
+                {
+                  "group": "Male",
+                  "n": 1902,
+                  "value": 0.0037,
+                  "ci95": [
+                    0.0011,
+                    0.0068
+                  ]
+                },
+                {
+                  "group": "Female",
+                  "n": 1692,
+                  "value": 0.0177,
+                  "ci95": [
+                    0.0118,
+                    0.0242
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "age_bin",
+              "label": "Annotated age",
+              "groups": [
+                {
+                  "group": "20-29",
+                  "n": 1431,
+                  "value": 0.0203,
+                  "ci95": [
+                    0.0133,
+                    0.028
+                  ]
+                },
+                {
+                  "group": "30-39",
+                  "n": 1028,
+                  "value": 0.0039,
+                  "ci95": [
+                    0.001,
+                    0.0088
+                  ]
+                },
+                {
+                  "group": "40-49",
+                  "n": 594,
+                  "value": 0.0067,
+                  "ci95": [
+                    0.0017,
+                    0.0135
+                  ]
+                },
+                {
+                  "group": "50-59",
+                  "n": 351,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "60-69",
+                  "n": 134,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "70+",
+                  "n": 56,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "status": "failed"
+    },
+    {
+      "task": "presentation_estimation",
+      "model_id": "mivolo-v2-face@53393526",
+      "model_name": "MiVOLO v2",
+      "report": "eval/results/mivolo_v2_fairface.json",
+      "dataset": "HuggingFaceM4/FairFace@54d573cd (validation, padding 1.25)",
+      "evaluated_at": "2026-09-24T21:49:35+00:00",
+      "n": 3594,
+      "criteria": [
+        {
+          "id": "accuracy_gap",
+          "label": "Gap in selective accuracy between groups",
+          "format": "pp",
+          "comparator": "max",
+          "limit": 0.05,
+          "measured": 0.0289,
+          "worst_family": "race",
+          "worst_group": "Black",
+          "passed": true,
+          "by_family": [
+            {
+              "family": "race",
+              "group": "Black",
+              "measured": 0.0289,
+              "passed": true
+            },
+            {
+              "family": "gender",
+              "group": "Male",
+              "measured": 0.0068,
+              "passed": true
+            },
+            {
+              "family": "age_bin",
+              "group": "70+",
+              "measured": 0.0096,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "abstention_ratio",
+          "label": "Worst group's \"uncertain\" rate vs. overall",
+          "format": "ratio",
+          "comparator": "max",
+          "limit": 2.0,
+          "measured": 3.784,
+          "worst_family": "age_bin",
+          "worst_group": "70+",
+          "passed": false,
+          "by_family": [
+            {
+              "family": "race",
+              "group": "Black",
+              "measured": 3.636,
+              "passed": false
+            },
+            {
+              "family": "gender",
+              "group": "Male",
+              "measured": 0.994,
+              "passed": true
+            },
+            {
+              "family": "age_bin",
+              "group": "70+",
+              "measured": 3.784,
+              "passed": false
+            }
+          ]
+        }
+      ],
+      "metrics": [
+        {
+          "id": "selective_accuracy",
+          "label": "Selective accuracy (vs. annotated perceived gender)",
+          "format": "percent",
+          "higher_is_better": true,
+          "overall": 0.9863,
+          "gate_threshold": null,
+          "families": [
+            {
+              "family": "race",
+              "label": "Annotated race",
+              "groups": [
+                {
+                  "group": "East Asian",
+                  "n": 505,
+                  "value": 0.9842,
+                  "ci95": [
+                    0.9723,
+                    0.9941
+                  ]
+                },
+                {
+                  "group": "Indian",
+                  "n": 519,
+                  "value": 0.9961,
+                  "ci95": [
+                    0.9904,
+                    1.0
+                  ]
+                },
+                {
+                  "group": "Black",
+                  "n": 458,
+                  "value": 0.9672,
+                  "ci95": [
+                    0.9498,
+                    0.9825
+                  ]
+                },
+                {
+                  "group": "White",
+                  "n": 743,
+                  "value": 0.9879,
+                  "ci95": [
+                    0.9798,
+                    0.9946
+                  ]
+                },
+                {
+                  "group": "Middle Eastern",
+                  "n": 454,
+                  "value": 0.9956,
+                  "ci95": [
+                    0.989,
+                    1.0
+                  ]
+                },
+                {
+                  "group": "Latino/Hispanic",
+                  "n": 458,
+                  "value": 0.9956,
+                  "ci95": [
+                    0.9891,
+                    1.0
+                  ]
+                },
+                {
+                  "group": "Southeast Asian",
+                  "n": 440,
+                  "value": 0.975,
+                  "ci95": [
+                    0.9591,
+                    0.9886
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "gender",
+              "label": "Annotated gender",
+              "groups": [
+                {
+                  "group": "Male",
+                  "n": 1893,
+                  "value": 0.9831,
+                  "ci95": [
+                    0.9768,
+                    0.9884
+                  ]
+                },
+                {
+                  "group": "Female",
+                  "n": 1684,
+                  "value": 0.9899,
+                  "ci95": [
+                    0.9852,
+                    0.9947
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "age_bin",
+              "label": "Annotated age",
+              "groups": [
+                {
+                  "group": "20-29",
+                  "n": 1419,
+                  "value": 0.9859,
+                  "ci95": [
+                    0.9796,
+                    0.9915
+                  ]
+                },
+                {
+                  "group": "30-39",
+                  "n": 1027,
+                  "value": 0.9864,
+                  "ci95": [
+                    0.9796,
+                    0.9932
+                  ]
+                },
+                {
+                  "group": "40-49",
+                  "n": 592,
+                  "value": 0.9848,
+                  "ci95": [
+                    0.973,
+                    0.9932
+                  ]
+                },
+                {
+                  "group": "50-59",
+                  "n": 350,
+                  "value": 0.9914,
+                  "ci95": [
+                    0.98,
+                    1.0
+                  ]
+                },
+                {
+                  "group": "60-69",
+                  "n": 134,
+                  "value": 0.9851,
+                  "ci95": [
+                    0.9627,
+                    1.0
+                  ]
+                },
+                {
+                  "group": "70+",
+                  "n": 55,
+                  "value": 0.9818,
+                  "ci95": [
+                    0.9455,
+                    1.0
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "abstention",
+          "label": "Answered \"uncertain\"",
+          "format": "percent",
+          "higher_is_better": false,
+          "overall": 0.0047,
+          "gate_threshold": 0.0094,
+          "families": [
+            {
+              "family": "race",
+              "label": "Annotated race",
+              "groups": [
+                {
+                  "group": "East Asian",
+                  "n": 509,
+                  "value": 0.0079,
+                  "ci95": [
+                    0.002,
+                    0.0157
+                  ]
+                },
+                {
+                  "group": "Indian",
+                  "n": 520,
+                  "value": 0.0019,
+                  "ci95": [
+                    0.0,
+                    0.0058
+                  ]
+                },
+                {
+                  "group": "Black",
+                  "n": 466,
+                  "value": 0.0172,
+                  "ci95": [
+                    0.0064,
+                    0.03
+                  ]
+                },
+                {
+                  "group": "White",
+                  "n": 745,
+                  "value": 0.0027,
+                  "ci95": [
+                    0.0,
+                    0.0067
+                  ]
+                },
+                {
+                  "group": "Middle Eastern",
+                  "n": 454,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "Latino/Hispanic",
+                  "n": 459,
+                  "value": 0.0022,
+                  "ci95": [
+                    0.0,
+                    0.0065
+                  ]
+                },
+                {
+                  "group": "Southeast Asian",
+                  "n": 441,
+                  "value": 0.0023,
+                  "ci95": [
+                    0.0,
+                    0.0068
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "gender",
+              "label": "Annotated gender",
+              "groups": [
+                {
+                  "group": "Male",
+                  "n": 1902,
+                  "value": 0.0047,
+                  "ci95": [
+                    0.0021,
+                    0.0084
+                  ]
+                },
+                {
+                  "group": "Female",
+                  "n": 1692,
+                  "value": 0.0047,
+                  "ci95": [
+                    0.0018,
+                    0.0083
+                  ]
+                }
+              ]
+            },
+            {
+              "family": "age_bin",
+              "label": "Annotated age",
+              "groups": [
+                {
+                  "group": "20-29",
+                  "n": 1431,
+                  "value": 0.0084,
+                  "ci95": [
+                    0.0042,
+                    0.0133
+                  ]
+                },
+                {
+                  "group": "30-39",
+                  "n": 1028,
+                  "value": 0.001,
+                  "ci95": [
+                    0.0,
+                    0.0039
+                  ]
+                },
+                {
+                  "group": "40-49",
+                  "n": 594,
+                  "value": 0.0034,
+                  "ci95": [
+                    0.0,
+                    0.0084
+                  ]
+                },
+                {
+                  "group": "50-59",
+                  "n": 351,
+                  "value": 0.0028,
+                  "ci95": [
+                    0.0,
+                    0.0085
+                  ]
+                },
+                {
+                  "group": "60-69",
+                  "n": 134,
+                  "value": 0.0,
+                  "ci95": [
+                    0.0,
+                    0.0
+                  ]
+                },
+                {
+                  "group": "70+",
+                  "n": 56,
+                  "value": 0.0179,
+                  "ci95": [
+                    0.0,
+                    0.0536
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "status": "failed"
+    },
+    {
+      "task": "age_transformation",
+      "model_id": "sam-ffhq-aging@c1895ae",
+      "model_name": "SAM",
+      "report": null,
+      "dataset": null,
+      "evaluated_at": null,
+      "n": null,
+      "status": "not_evaluated",
+      "criteria": [
+        {
+          "id": "older_attained",
+          "label": "Older adult: lowest group's mean attained age",
+          "format": "years",
+          "comparator": "min",
+          "limit": 55.0,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        },
+        {
+          "id": "young_attained_low",
+          "label": "Young adult: lowest group's mean attained age",
+          "format": "years",
+          "comparator": "min",
+          "limit": 18.0,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        },
+        {
+          "id": "young_attained_high",
+          "label": "Young adult: highest group's mean attained age",
+          "format": "years",
+          "comparator": "max",
+          "limit": 40.0,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        },
+        {
+          "id": "attained_gap",
+          "label": "Gap in mean attained age between groups",
+          "format": "years",
+          "comparator": "max",
+          "limit": 10.0,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        },
+        {
+          "id": "delta_e",
+          "label": "Skin-tone change, worst group (mean ΔE76)",
+          "format": "number",
+          "comparator": "max",
+          "limit": 8.0,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        },
+        {
+          "id": "abs_dl",
+          "label": "Lightness change, worst group (mean |ΔL*|)",
+          "format": "number",
+          "comparator": "max",
+          "limit": 5.0,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        },
+        {
+          "id": "dl_gap",
+          "label": "Gap in signed lightness change between groups (ΔL*)",
+          "format": "number",
+          "comparator": "max",
+          "limit": 3.0,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        },
+        {
+          "id": "integrity",
+          "label": "Output still shows one detectable face, worst group",
+          "format": "percent",
+          "comparator": "min",
+          "limit": 0.95,
+          "measured": null,
+          "worst_family": null,
+          "worst_group": null,
+          "passed": null,
+          "by_family": []
+        }
+      ],
+      "metrics": []
+    }
+  ]
+}
