@@ -50,8 +50,7 @@ export default function ResponsibleUsePage() {
         <h2>Adults only, and only with permission</h2>
         <p>
           Upload photos only of yourself or of adults who have agreed. Photos of children and
-          teenagers aren&apos;t supported. Choosing a younger target age group for an illustration doesn&apos;t
-          change this.
+          teenagers aren&apos;t supported, and the aging preview only offers adult target ages.
         </p>
       </section>
       <section>

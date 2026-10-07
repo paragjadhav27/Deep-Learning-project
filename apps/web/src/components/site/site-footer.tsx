@@ -30,6 +30,11 @@ export function SiteFooter() {
                 Model cards and limitations
               </Link>
             </li>
+            <li>
+              <Link className="inline-flex min-h-11 items-center underline-offset-4 hover:underline" href="/evaluation">
+                Evaluation results
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

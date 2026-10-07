@@ -44,15 +44,6 @@ export async function expectAccessible(page: Page, context: string) {
 /** The app's own error panel (Next also renders an empty role="alert" route announcer). */
 export const errorAlert = (page: Page) => page.locator('[role="alert"][data-error-code]');
 
-export async function giveConsentWithKeyboard(page: Page) {
-  for (const name of [/permission/i, /18 or older/i, /uncertain and illustrative/i]) {
-    const box = page.getByRole("checkbox", { name });
-    await box.focus();
-    await page.keyboard.press("Space");
-    await expect(box).toBeChecked();
-  }
-}
-
 export async function choosePhoto(page: Page, file: string) {
   await expect(page.getByRole("button", { name: "Choose a photo" })).toBeEnabled();
   await page.getByTestId("photo-input").setInputFiles(file);

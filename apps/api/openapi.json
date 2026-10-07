@@ -330,6 +330,290 @@
         "title": "ErrorResponse",
         "type": "object"
       },
+      "EvaluationMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "families": {
+            "items": {
+              "$ref": "#/components/schemas/MetricFamily"
+            },
+            "title": "Families",
+            "type": "array"
+          },
+          "format": {
+            "enum": [
+              "number",
+              "percent",
+              "pp",
+              "ratio",
+              "years"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "gate_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gate Threshold"
+          },
+          "higher_is_better": {
+            "title": "Higher Is Better",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "overall": {
+            "title": "Overall",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "format",
+          "higher_is_better",
+          "overall",
+          "gate_threshold",
+          "families"
+        ],
+        "title": "EvaluationMetric",
+        "type": "object"
+      },
+      "EvaluationSummary": {
+        "additionalProperties": false,
+        "description": "A model's evaluation outcome without per-group metrics.",
+        "properties": {
+          "criteria": {
+            "items": {
+              "$ref": "#/components/schemas/GateCriterion"
+            },
+            "title": "Criteria",
+            "type": "array"
+          },
+          "dataset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset"
+          },
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "model_name": {
+            "title": "Model Name",
+            "type": "string"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N"
+          },
+          "report": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "not_evaluated"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "task": {
+            "enum": [
+              "face_detection",
+              "age_estimation",
+              "presentation_estimation",
+              "age_transformation"
+            ],
+            "title": "Task",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task",
+          "model_id",
+          "model_name",
+          "status",
+          "report",
+          "dataset",
+          "evaluated_at",
+          "n",
+          "criteria"
+        ],
+        "title": "EvaluationSummary",
+        "type": "object"
+      },
+      "EvaluationView": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "items": {
+              "$ref": "#/components/schemas/GateCriterion"
+            },
+            "title": "Criteria",
+            "type": "array"
+          },
+          "dataset": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset"
+          },
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationMetric"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "model_name": {
+            "title": "Model Name",
+            "type": "string"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N"
+          },
+          "report": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report"
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "not_evaluated"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "task": {
+            "enum": [
+              "face_detection",
+              "age_estimation",
+              "presentation_estimation",
+              "age_transformation"
+            ],
+            "title": "Task",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task",
+          "model_id",
+          "model_name",
+          "status",
+          "report",
+          "dataset",
+          "evaluated_at",
+          "n",
+          "criteria",
+          "metrics"
+        ],
+        "title": "EvaluationView",
+        "type": "object"
+      },
+      "EvaluationsView": {
+        "additionalProperties": false,
+        "properties": {
+          "evaluations": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationView"
+            },
+            "title": "Evaluations",
+            "type": "array"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "evaluations"
+        ],
+        "title": "EvaluationsView",
+        "type": "object"
+      },
       "FaceCheck": {
         "additionalProperties": false,
         "properties": {
@@ -426,6 +710,17 @@
       "FeatureView": {
         "additionalProperties": false,
         "properties": {
+          "candidate": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EvaluationSummary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The evaluated real model for this tool, so the UI can explain a mock."
+          },
           "enabled": {
             "title": "Enabled",
             "type": "boolean"
@@ -450,6 +745,140 @@
           "model"
         ],
         "title": "FeatureView",
+        "type": "object"
+      },
+      "GateCriterion": {
+        "additionalProperties": false,
+        "description": "One pre-registered release gate (docs/PLAN.md section 7.3).",
+        "properties": {
+          "by_family": {
+            "items": {
+              "$ref": "#/components/schemas/GateFamilyResult"
+            },
+            "title": "By Family",
+            "type": "array"
+          },
+          "comparator": {
+            "description": "'max': measured must be <= limit; 'min': measured must be >= limit.",
+            "enum": [
+              "max",
+              "min"
+            ],
+            "title": "Comparator",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "number",
+              "percent",
+              "pp",
+              "ratio",
+              "years"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "number"
+          },
+          "measured": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Worst case across families; null if not run.",
+            "title": "Measured"
+          },
+          "passed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Passed"
+          },
+          "worst_family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worst Family"
+          },
+          "worst_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worst Group"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "format",
+          "comparator",
+          "limit",
+          "measured",
+          "worst_family",
+          "worst_group",
+          "passed",
+          "by_family"
+        ],
+        "title": "GateCriterion",
+        "type": "object"
+      },
+      "GateFamilyResult": {
+        "additionalProperties": false,
+        "description": "A criterion's worst case within one group family (e.g. annotated race).",
+        "properties": {
+          "family": {
+            "title": "Family",
+            "type": "string"
+          },
+          "group": {
+            "title": "Group",
+            "type": "string"
+          },
+          "measured": {
+            "title": "Measured",
+            "type": "number"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "family",
+          "group",
+          "measured",
+          "passed"
+        ],
+        "title": "GateFamilyResult",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -673,6 +1102,66 @@
           "finished_at"
         ],
         "title": "JobView",
+        "type": "object"
+      },
+      "MetricFamily": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "title": "Family",
+            "type": "string"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/MetricGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "family",
+          "label",
+          "groups"
+        ],
+        "title": "MetricFamily",
+        "type": "object"
+      },
+      "MetricGroup": {
+        "additionalProperties": false,
+        "properties": {
+          "ci95": {
+            "description": "95% bootstrap confidence interval [low, high].",
+            "items": {
+              "type": "number"
+            },
+            "title": "Ci95",
+            "type": "array"
+          },
+          "group": {
+            "title": "Group",
+            "type": "string"
+          },
+          "n": {
+            "title": "N",
+            "type": "integer"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "group",
+          "n",
+          "value",
+          "ci95"
+        ],
+        "title": "MetricGroup",
         "type": "object"
       },
       "ModelCard": {
@@ -1057,6 +1546,28 @@
           }
         },
         "summary": "Readyz",
+        "tags": [
+          "meta"
+        ]
+      }
+    },
+    "/v1/evaluations": {
+      "get": {
+        "description": "Measured evaluation results and release-gate outcomes for every model (PLAN section 7.3).",
+        "operationId": "evaluations_v1_evaluations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Evaluations",
         "tags": [
           "meta"
         ]

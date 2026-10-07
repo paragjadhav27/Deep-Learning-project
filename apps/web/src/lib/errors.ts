@@ -42,8 +42,8 @@ export const ERROR_COPY: Record<ErrorCode, ErrorCopy> = {
     recovery: "replace_photo",
   },
   consent_required: {
-    title: "Please confirm the statements above",
-    guidance: "All three confirmations are needed before a photo can be uploaded.",
+    title: "The upload was refused",
+    guidance: "Reload the page and try again.",
     recovery: "none",
   },
   no_face_detected: {

@@ -18,9 +18,11 @@ export default function ModelCardsPage() {
       <section>
         <h2>Evaluation status</h2>
         <p>
-          Fairness evaluation across skin tones (Monk Skin Tone scale), age bands, and presentation
-          styles is planned before any real estimator is enabled. Until then, tools either run clearly
-          labelled mock models or are switched off.
+          The age and perceived-presentation model (MiVOLO v2) was evaluated on the FairFace test
+          split across annotated race, perceived gender, and age bands. It missed some of the fairness
+          limits we set in advance, so it runs here as a non-commercial experiment rather than an
+          approved release. The aging model (SAM) hasn&apos;t been evaluated yet. Evaluation by skin
+          tone (Monk Skin Tone scale) and presentation style still needs a consented, annotated dataset.
         </p>
       </section>
     </ProsePage>

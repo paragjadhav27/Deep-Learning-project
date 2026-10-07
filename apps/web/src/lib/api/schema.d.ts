@@ -44,6 +44,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/evaluations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Evaluations
+         * @description Measured evaluation results and release-gate outcomes for every model (PLAN section 7.3).
+         */
+        get: operations["evaluations_v1_evaluations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/jobs/{job_id}": {
         parameters: {
             query?: never;
@@ -323,6 +343,92 @@ export interface components {
         ErrorResponse: {
             error: components["schemas"]["ErrorBody"];
         };
+        /** EvaluationMetric */
+        EvaluationMetric: {
+            /** Families */
+            families: components["schemas"]["MetricFamily"][];
+            /**
+             * Format
+             * @enum {string}
+             */
+            format: "number" | "percent" | "pp" | "ratio" | "years";
+            /** Gate Threshold */
+            gate_threshold: number | null;
+            /** Higher Is Better */
+            higher_is_better: boolean;
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Overall */
+            overall: number;
+        };
+        /**
+         * EvaluationSummary
+         * @description A model's evaluation outcome without per-group metrics.
+         */
+        EvaluationSummary: {
+            /** Criteria */
+            criteria: components["schemas"]["GateCriterion"][];
+            /** Dataset */
+            dataset: string | null;
+            /** Evaluated At */
+            evaluated_at: string | null;
+            /** Model Id */
+            model_id: string;
+            /** Model Name */
+            model_name: string;
+            /** N */
+            n: number | null;
+            /** Report */
+            report: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "passed" | "failed" | "not_evaluated";
+            /**
+             * Task
+             * @enum {string}
+             */
+            task: "face_detection" | "age_estimation" | "presentation_estimation" | "age_transformation";
+        };
+        /** EvaluationView */
+        EvaluationView: {
+            /** Criteria */
+            criteria: components["schemas"]["GateCriterion"][];
+            /** Dataset */
+            dataset: string | null;
+            /** Evaluated At */
+            evaluated_at: string | null;
+            /** Metrics */
+            metrics: components["schemas"]["EvaluationMetric"][];
+            /** Model Id */
+            model_id: string;
+            /** Model Name */
+            model_name: string;
+            /** N */
+            n: number | null;
+            /** Report */
+            report: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "passed" | "failed" | "not_evaluated";
+            /**
+             * Task
+             * @enum {string}
+             */
+            task: "face_detection" | "age_estimation" | "presentation_estimation" | "age_transformation";
+        };
+        /** EvaluationsView */
+        EvaluationsView: {
+            /** Evaluations */
+            evaluations: components["schemas"]["EvaluationView"][];
+            /** Source */
+            source: string;
+        };
         /** FaceCheck */
         FaceCheck: {
             status: components["schemas"]["FaceCheckStatus"];
@@ -354,10 +460,62 @@ export interface components {
         };
         /** FeatureView */
         FeatureView: {
+            /** @description The evaluated real model for this tool, so the UI can explain a mock. */
+            candidate?: components["schemas"]["EvaluationSummary"] | null;
             /** Enabled */
             enabled: boolean;
             model: components["schemas"]["ModelCard"] | null;
             task: components["schemas"]["Task"];
+        };
+        /**
+         * GateCriterion
+         * @description One pre-registered release gate (docs/PLAN.md section 7.3).
+         */
+        GateCriterion: {
+            /** By Family */
+            by_family: components["schemas"]["GateFamilyResult"][];
+            /**
+             * Comparator
+             * @description 'max': measured must be <= limit; 'min': measured must be >= limit.
+             * @enum {string}
+             */
+            comparator: "max" | "min";
+            /**
+             * Format
+             * @enum {string}
+             */
+            format: "number" | "percent" | "pp" | "ratio" | "years";
+            /** Id */
+            id: string;
+            /** Label */
+            label: string;
+            /** Limit */
+            limit: number;
+            /**
+             * Measured
+             * @description Worst case across families; null if not run.
+             */
+            measured: number | null;
+            /** Passed */
+            passed: boolean | null;
+            /** Worst Family */
+            worst_family: string | null;
+            /** Worst Group */
+            worst_group: string | null;
+        };
+        /**
+         * GateFamilyResult
+         * @description A criterion's worst case within one group family (e.g. annotated race).
+         */
+        GateFamilyResult: {
+            /** Family */
+            family: string;
+            /** Group */
+            group: string;
+            /** Measured */
+            measured: number;
+            /** Passed */
+            passed: boolean;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -444,6 +602,29 @@ export interface components {
             stage: string | null;
             status: components["schemas"]["JobStatus"];
             task: components["schemas"]["Task"];
+        };
+        /** MetricFamily */
+        MetricFamily: {
+            /** Family */
+            family: string;
+            /** Groups */
+            groups: components["schemas"]["MetricGroup"][];
+            /** Label */
+            label: string;
+        };
+        /** MetricGroup */
+        MetricGroup: {
+            /**
+             * Ci95
+             * @description 95% bootstrap confidence interval [low, high].
+             */
+            ci95: number[];
+            /** Group */
+            group: string;
+            /** N */
+            n: number;
+            /** Value */
+            value: number;
         };
         /** ModelCard */
         ModelCard: {
@@ -627,6 +808,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthView"];
+                };
+            };
+        };
+    };
+    evaluations_v1_evaluations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluationsView"];
                 };
             };
         };

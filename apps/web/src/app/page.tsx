@@ -69,9 +69,9 @@ export default function HomePage() {
           How it works
         </h2>
         <ol className="grid gap-5 md:grid-cols-3">
-          <Step n={1} title="You opt in">
-            Confirm that you have permission to use the photo, that the person in it is an adult,
-            and that you understand the limitations.
+          <Step n={1} title="Pick a tool">
+            Use a photo of an adult that you have permission to use. Results are illustrative,
+            not facts about anyone.
           </Step>
           <Step n={2} title="One photo, one face">
             Metadata such as location is removed on your device before upload. Photos with no face

@@ -4,44 +4,33 @@ import { describe, expect, it, vi } from "vitest";
 
 import { AgeResult } from "@/components/flow/age-result";
 import { BeforeAfter } from "@/components/flow/before-after";
-import { ConsentPanel, isConsentComplete } from "@/components/flow/consent-panel";
 import { ErrorState } from "@/components/flow/error-state";
 import { PresentationResult } from "@/components/flow/presentation-result";
 import { TargetAgeSelector } from "@/components/flow/target-age-selector";
-import { ApiError, type Consent, type TargetGroupView } from "@/lib/api/client";
-
-describe("ConsentPanel", () => {
-  it("requires all three confirmations", async () => {
-    let value: Consent = { has_permission: false, is_adult: false, accepts_limitations: false };
-    const onChange = vi.fn((v: Consent) => (value = v));
-    const { rerender } = render(<ConsentPanel value={value} onChange={onChange} />);
-    for (const name of [/permission/i, /18 or older/i, /uncertain and illustrative/i]) {
-      await userEvent.click(screen.getByRole("checkbox", { name }));
-      rerender(<ConsentPanel value={value} onChange={onChange} />);
-    }
-    expect(isConsentComplete(value)).toBe(true);
-    // Each checkbox has a description wired up for screen readers.
-    expect(screen.getByRole("checkbox", { name: /18 or older/i })).toHaveAccessibleDescription(
-      /children or teenagers/i,
-    );
-  });
-});
+import { ApiError, type TargetGroupView } from "@/lib/api/client";
 
 describe("TargetAgeSelector", () => {
   const groups: TargetGroupView[] = [
     { group: "child", available: false, reason: "Turned off pending review." },
     { group: "teen", available: false, reason: "Turned off pending review." },
     { group: "young_adult", available: true, reason: null },
-    { group: "middle_aged_adult", available: true, reason: null },
+    { group: "middle_aged_adult", available: false, reason: "The current model doesn't support this group." },
     { group: "older_adult", available: true, reason: null },
   ];
+
+  it("hides child and teen targets", () => {
+    render(<TargetAgeSelector groups={groups} value={null} onChange={vi.fn()} />);
+    expect(screen.queryByRole("radio", { name: /child/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("radio", { name: /teen/i })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("radio")).toHaveLength(3);
+  });
 
   it("explains unavailable groups and blocks selecting them", async () => {
     const onChange = vi.fn();
     render(<TargetAgeSelector groups={groups} value={null} onChange={onChange} />);
-    const child = screen.getByRole("radio", { name: /child/i });
-    expect(child).toBeDisabled();
-    expect(child).toHaveAccessibleDescription(/pending review/i);
+    const middle = screen.getByRole("radio", { name: /middle-aged adult/i });
+    expect(middle).toBeDisabled();
+    expect(middle).toHaveAccessibleDescription(/doesn.t support this group/i);
     await userEvent.click(screen.getByRole("radio", { name: /older adult/i }));
     expect(onChange).toHaveBeenCalledWith("older_adult");
     expect(screen.getByText(/isn.t a prediction/i)).toBeInTheDocument();

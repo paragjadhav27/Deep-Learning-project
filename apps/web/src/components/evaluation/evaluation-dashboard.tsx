@@ -215,7 +215,8 @@ function EvaluationSection({ evaluation: e }: { evaluation: EvaluationView }) {
         {e.status === "not_evaluated" ? (
           <p className="max-w-3xl">
             The limits below are set, and the evaluation script is ready, but it hasn&apos;t been
-            run. Until it runs and passes, this model is refused and the tool uses a mock.
+            run. Until it runs and passes, this model is refused unless ungated models are allowed
+            for a local experiment.
           </p>
         ) : null}
       </header>

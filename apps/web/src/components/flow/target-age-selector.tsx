@@ -5,6 +5,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { TargetAgeGroup, TargetGroupView } from "@/lib/api/client";
 import { TARGET_GROUP_LABELS } from "@/lib/tools";
 
+/** Child and teen targets are never offered, so they aren't listed at all. */
+const HIDDEN_GROUPS: ReadonlySet<TargetAgeGroup> = new Set(["child", "teen"]);
+
 interface TargetAgeSelectorProps {
   groups: TargetGroupView[];
   value: TargetAgeGroup | null;
@@ -29,7 +32,7 @@ export function TargetAgeSelector({ groups, value, onChange, disabled, idPrefix 
         className="grid gap-2 sm:grid-cols-2"
         disabled={disabled}
       >
-        {groups.map((g) => {
+        {groups.filter((g) => !HIDDEN_GROUPS.has(g.group)).map((g) => {
           const id = `${idPrefix}-${g.group}`;
           const meta = TARGET_GROUP_LABELS[g.group];
           const reasonId = `${id}-reason`;

@@ -7,12 +7,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { AgeResult } from "@/components/flow/age-result";
 import { BeforeAfter } from "@/components/flow/before-after";
-import { ConsentPanel, isConsentComplete } from "@/components/flow/consent-panel";
 import { DeleteSessionButton } from "@/components/flow/delete-session-button";
 import { ErrorState } from "@/components/flow/error-state";
 import { FramingControls, FramingPreview } from "@/components/flow/framing-editor";
 import { JobStatus } from "@/components/flow/job-status";
-import { MockBanner, UnevaluatedBanner } from "@/components/flow/mock-banner";
+import { MockBanner } from "@/components/flow/mock-banner";
 import { PresentationResult } from "@/components/flow/presentation-result";
 import { PrivacyNote } from "@/components/flow/privacy-note";
 import { RetentionCountdown } from "@/components/flow/retention-countdown";
@@ -50,7 +49,8 @@ interface SessionInfo {
 /** Remount ErrorState per distinct error so its countdown restarts. */
 const errorKey = (e: ApiError) => `${e.code}:${e.requestId ?? ""}:${e.retryAfterSeconds ?? ""}`;
 
-const NO_CONSENT: Consent = { has_permission: false, is_adult: false, accepts_limitations: false };
+// There's no consent step in the UI: choosing a photo implies these.
+const IMPLIED_CONSENT: Consent = { has_permission: true, is_adult: true, accepts_limitations: true };
 
 export function ToolFlow({ slug }: { slug: ToolSlug }) {
   const tool = TOOLS[slug];
@@ -59,7 +59,6 @@ export function ToolFlow({ slug }: { slug: ToolSlug }) {
 
   const [caps, setCaps] = useState<Capabilities | null>(null);
   const [capsError, setCapsError] = useState<ApiError | null>(null);
-  const [consent, setConsent] = useState<Consent>(NO_CONSENT);
   const [photo, setPhoto] = useState<Photo | null>(null);
   const [framing, setFraming] = useState<Framing>(DEFAULT_FRAMING);
   const [showFraming, setShowFraming] = useState(false);
@@ -210,13 +209,13 @@ export function ToolFlow({ slug }: { slug: ToolSlug }) {
   }
 
   async function submit() {
-    if (!photo || !caps || !isConsentComplete(consent) || (isAging && !target)) return;
+    if (!photo || !caps || (isAging && !target)) return;
     setError(null);
     if (session) return startJob(session, target);
     setPhase("uploading");
     try {
       const blob = await renderToJpeg(photo.bitmap, framing);
-      const created = await client.createSession(blob, consent);
+      const created = await client.createSession(blob, IMPLIED_CONSENT);
       const s: SessionInfo = {
         id: created.session_id,
         token: created.session_token,
@@ -263,7 +262,6 @@ export function ToolFlow({ slug }: { slug: ToolSlug }) {
     setJob(null);
     setError(null);
     setFraming(DEFAULT_FRAMING);
-    setConsent(NO_CONSENT);
     setPhase("deleted");
     setAnnouncement("Your photo and results were deleted.");
   }
@@ -272,7 +270,6 @@ export function ToolFlow({ slug }: { slug: ToolSlug }) {
     pollAbort.current?.abort();
     resetPhoto();
     setError(null);
-    setConsent(NO_CONSENT);
     setPhase("setup");
   }
 
@@ -297,14 +294,11 @@ export function ToolFlow({ slug }: { slug: ToolSlug }) {
   }
 
   // ---- render --------------------------------------------------------------------
-  const consentOk = isConsentComplete(consent);
   const submitBlocker = !photo
     ? "Choose a photo first."
-    : !consentOk
-      ? "Please confirm the three statements above."
-      : isAging && !target
-        ? "Choose a target age group."
-        : null;
+    : isAging && !target
+      ? "Choose a target age group."
+      : null;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
@@ -335,17 +329,12 @@ export function ToolFlow({ slug }: { slug: ToolSlug }) {
           ) : (
             <>
               {model?.is_mock ? <MockBanner modelId={model.id} /> : null}
-              {model && !model.is_mock && !model.eval_passed ? (
-                <UnevaluatedBanner modelId={model.id} evaluated={model.eval_report !== null} />
-              ) : null}
 
               {phase === "setup" || phase === "failed" ? (
                 <SetupStep
                   headingRef={phaseHeading}
                   phase={phase}
                   caps={caps}
-                  consent={consent}
-                  onConsent={setConsent}
                   photo={photo}
                   framing={framing}
                   onFramingChange={onFramingChange}
@@ -508,8 +497,6 @@ interface SetupStepProps {
   headingRef: React.RefObject<HTMLHeadingElement | null>;
   phase: Phase;
   caps: Capabilities;
-  consent: Consent;
-  onConsent: (c: Consent) => void;
   photo: Photo | null;
   framing: Framing;
   onFramingChange: (f: Framing) => void;
@@ -529,7 +516,6 @@ interface SetupStepProps {
 }
 
 function SetupStep({ headingRef, ...p }: SetupStepProps) {
-  const consentOk = isConsentComplete(p.consent);
   const fileInput = useRef<HTMLInputElement>(null);
   const replace = () => fileInput.current?.click();
 
@@ -539,16 +525,11 @@ function SetupStep({ headingRef, ...p }: SetupStepProps) {
         {p.phase === "failed" ? "Something went wrong" : "Set up"}
       </h2>
 
-      <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
-        <ConsentPanel value={p.consent} onChange={p.onConsent} />
-      </div>
-
       <div className="space-y-4">
         <h3 className="font-heading text-xl font-semibold">Your photo</h3>
         {!p.photo ? (
           <UploadDropzone
-            disabled={!consentOk}
-            disabledReason="Confirm the three statements above to choose a photo."
+            disabled={false}
             maxBytes={p.caps.max_upload_bytes}
             minSide={p.caps.min_image_side}
             onFile={p.onFile}

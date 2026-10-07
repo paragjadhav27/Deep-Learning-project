@@ -5,8 +5,10 @@ from fastapi import APIRouter, Response
 from facelens_api.api.deps import ContainerDep
 from facelens_api.db.engine import ping
 from facelens_api.domain.enums import Task
+from facelens_api.ml.evaluations import load_evaluations, summary_for
 from facelens_api.schemas.api import (
     CapabilitiesView,
+    EvaluationsView,
     FaceDetectionView,
     FeatureView,
     HealthView,
@@ -80,7 +82,15 @@ def capabilities(c: ContainerDep) -> CapabilitiesView:
             if info
             else None
         )
-        features.append(FeatureView(task=task, enabled=info is not None, model=card))
+        features.append(
+            FeatureView(
+                task=task,
+                enabled=info is not None,
+                model=card,
+                # Only a mock needs explaining: which real model was evaluated, and its outcome.
+                candidate=summary_for(task.value) if info and info.is_mock else None,
+            )
+        )
     s = c.settings
     det = c.registry.detector
     return CapabilitiesView(
@@ -104,3 +114,9 @@ def capabilities(c: ContainerDep) -> CapabilitiesView:
         min_image_side=s.min_image_side,
         max_image_side=s.max_image_side,
     )
+
+
+@router.get("/v1/evaluations", response_model=EvaluationsView)
+def evaluations() -> EvaluationsView:
+    """Measured evaluation results and release-gate outcomes for every model (PLAN section 7.3)."""
+    return load_evaluations()

@@ -17,6 +17,11 @@ export type TargetGroupView = Schemas["TargetGroupView"];
 export type AgeEstimationResult = Schemas["AgeEstimationResult"];
 export type PresentationEstimationResult = Schemas["PresentationEstimationResult"];
 export type AgeTransformationResult = Schemas["AgeTransformationResult"];
+export type EvaluationsView = Schemas["EvaluationsView"];
+export type EvaluationView = Schemas["EvaluationView"];
+export type EvaluationSummary = Schemas["EvaluationSummary"];
+export type EvaluationMetric = Schemas["EvaluationMetric"];
+export type GateCriterion = Schemas["GateCriterion"];
 export type ApiErrorCode = Schemas["ErrorBody"]["code"];
 /** Client-side conditions that never come from the API. */
 export type ClientErrorCode = "network_error" | "job_poll_timeout";
@@ -80,6 +85,8 @@ export function createApiClient({ fetch: f = fetch, base = API_BASE }: ApiClient
 
   return {
     capabilities: (signal?: AbortSignal) => request<Capabilities>("/v1/models", { signal }),
+
+    evaluations: (signal?: AbortSignal) => request<EvaluationsView>("/v1/evaluations", { signal }),
 
     createSession(image: Blob, consent: Consent, signal?: AbortSignal) {
       const form = new FormData();

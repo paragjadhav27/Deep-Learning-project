@@ -114,7 +114,12 @@ def test_feature_flag_disables_task(app_factory) -> None:  # type: ignore[no-unt
         assert r.json()["error"]["code"] == "feature_disabled"
         caps = client.get("/v1/models").json()
         feature = next(f for f in caps["features"] if f["task"] == "presentation_estimation")
-        assert feature == {"task": "presentation_estimation", "enabled": False, "model": None}
+        assert feature == {
+            "task": "presentation_estimation",
+            "enabled": False,
+            "model": None,
+            "candidate": None,
+        }
 
 
 def test_requires_session_token(client: TestClient) -> None:

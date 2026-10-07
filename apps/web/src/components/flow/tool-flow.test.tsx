@@ -75,20 +75,16 @@ function route(handlers: Record<string, (init: RequestInit) => Response>) {
   });
 }
 
-async function consentAndChoosePhoto() {
+async function choosePhoto() {
   const user = userEvent.setup();
   const choose = await screen.findByRole("button", { name: /choose a photo/i });
-  expect(choose).toBeDisabled(); // consent gates the upload
-  for (const name of [/permission/i, /18 or older/i, /uncertain and illustrative/i]) {
-    await user.click(screen.getByRole("checkbox", { name }));
-  }
   expect(choose).toBeEnabled();
   await user.upload(screen.getByTestId("photo-input"), new File(["img"], "IMG_1234.jpg", { type: "image/jpeg" }));
   return user;
 }
 
 describe("ToolFlow (age estimate)", () => {
-  it("runs consent → upload → result → delete, with the mock clearly labelled", async () => {
+  it("runs upload → result → delete, with the mock clearly labelled", async () => {
     route({
       "GET /v1/models": () => json(200, CAPS),
       "POST /v1/sessions/s_1/jobs": () => json(202, JOB_OK),
@@ -98,7 +94,7 @@ describe("ToolFlow (age estimate)", () => {
     render(<ToolFlow slug="age" />);
     expect(await screen.findByRole("note", { name: /demonstration mode/i })).toHaveTextContent(/placeholder/i);
 
-    const user = await consentAndChoosePhoto();
+    const user = await choosePhoto();
     await user.click(screen.getByRole("button", { name: /upload and estimate age/i }));
 
     const heading = await screen.findByRole("heading", { name: /your result/i });
@@ -128,7 +124,7 @@ describe("ToolFlow (age estimate)", () => {
         json(422, { error: { code: "multiple_faces_detected", message: "More than one face.", retryable: false } }),
     });
     render(<ToolFlow slug="age" />);
-    const user = await consentAndChoosePhoto();
+    const user = await choosePhoto();
     await user.click(screen.getByRole("button", { name: /upload and estimate age/i }));
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent(/more than one face/i);
@@ -147,7 +143,7 @@ describe("ToolFlow (age estimate)", () => {
       "POST /v1/sessions": () => json(201, SESSION),
     });
     render(<ToolFlow slug="age" />);
-    const user = await consentAndChoosePhoto();
+    const user = await choosePhoto();
     await user.click(screen.getByRole("button", { name: /upload and estimate age/i }));
     await user.click(await screen.findByRole("button", { name: /try again/i }));
     expect(await screen.findByRole("heading", { name: /your result/i })).toBeInTheDocument();

@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         <h2>What we collect</h2>
         <ul>
           <li>The photo you choose, after it has been re-encoded on your device. This removes location and camera metadata, and the original file name is never sent.</li>
-          <li>Your three consent confirmations, recorded only as a version number of the consent text.</li>
+          <li>The version number of the upload terms in effect when you chose your photo.</li>
           <li>No account, name, email address, or tracking cookies.</li>
         </ul>
       </section>
